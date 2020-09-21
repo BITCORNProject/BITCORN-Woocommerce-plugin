@@ -8,4 +8,9 @@ Installation
 3. Configure plugin
 Config
 ![config](/assets/config.png)
-Format: ![Alt Text](url)
+
+Keys required 
+1. Client ID
+2. Client Secret
+3. TX Validation key
+
