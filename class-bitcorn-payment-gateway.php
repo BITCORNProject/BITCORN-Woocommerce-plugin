@@ -122,6 +122,9 @@ class WC_Bitcorn_Payment_Gateway extends WC_Payment_Gateway{
 		$tx = $corn_client->validate_transaction($transaction);
 		
     	if($tx!=false) {
+			if(isset($tx->error)) {
+				return $tx;
+			}
 
         	$items = $tx->items;
         	$tx_info = json_decode($tx->txInfo);
@@ -143,9 +146,15 @@ class WC_Bitcorn_Payment_Gateway extends WC_Payment_Gateway{
 					wc_reduce_stock_levels( $order_id );
 				}
 				return true;
+			} else {
+				return $response;
 			}
+		} else {
+			$object = new stdClass();
+            $object->status = "failed to verify transaction:".$transaction;//$response->getStatusCode();
+			return $object;
 		}
-		return false;
+		//return false;
 	}
 
 	public function create_corn_client () {
@@ -195,7 +204,7 @@ class WC_Bitcorn_Payment_Gateway extends WC_Payment_Gateway{
 				"quantity" => $item->get_quantity(),
 				"name" => $item_name,
 				"itemId" => strval($item->get_product_id()),
-				"amountUsd" => (float)$item->get_total(),
+				"amountUsd" => ((float)$item->get_total()),
 				"quantity" => $item->get_quantity()
 			];
 			
@@ -222,7 +231,7 @@ class WC_Bitcorn_Payment_Gateway extends WC_Payment_Gateway{
 		<fieldset>
 			<img src='/wp-content/plugins/bitcorn-payment-gateway/assets/corn-logo.png'>
 			<p class="form-row form-row-wide">
-                <label for="<?php echo $this->id; ?>-admin-note"><?php echo ($this->description); ?> <span class="required">*</span></label>
+                <label for="<?php echo $this->id; ?>-admin-note"><?php echo ($this->description); ?> <span class="required"></span></label>
                 
 			</p>						
 			<div class="clear"></div>

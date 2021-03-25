@@ -59,13 +59,16 @@ function process_post_request() {
 	{
 		return;
 	}
-
-	$transaction = $_POST["jwt"];
-	if(isset($transaction)) {
-		$corn_handler = new  WC_Bitcorn_Payment_Gateway();
-		$response = $corn_handler->transaction_validation_flow($transaction);
-		die(json_encode($response));
-	} else {
-		die("bad request, missing jwt");
+	try {
+		$transaction = $_POST["jwt"];
+		if(isset($transaction)) {
+			$corn_handler = new  WC_Bitcorn_Payment_Gateway();
+			$response = $corn_handler->transaction_validation_flow($transaction);
+			die(json_encode($response));
+		} else {
+			die("bad request, missing jwt");
+		}
+	} catch(Exception $e) {
+		die($e->getMessage());
 	}
 }
